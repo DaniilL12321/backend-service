@@ -8,17 +8,14 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM node:22-alpine AS runner
+FROM node:22-alpine AS production
 
 WORKDIR /app
 
-ENV NODE_ENV=production
-
 COPY package*.json ./
-RUN npm ci --omit=dev
+RUN npm ci --omit=dev --omit=optional && npm cache clean --force
 
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/README.md ./README.md
 
 EXPOSE 3000
 
