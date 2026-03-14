@@ -1,0 +1,20 @@
+services:
+  backend-service:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: backend-service
+    ports:
+      - '${PORT:-3000}:3000'
+    environment:
+      PORT: ${PORT:-3000}
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT:-32322}
+      DB_NAME: ${DB_NAME}
+      DB_USER: ${DB_USER}
+      DB_PASSWORD: ${DB_PASSWORD}
+      AUTH_LOGIN: ${AUTH_LOGIN:-student}
+      AUTH_PASSWORD: ${AUTH_PASSWORD:-student123}
+      JWT_SECRET: ${JWT_SECRET:-super-secret-key}
+      JWT_EXPIRES_IN_SECONDS: ${JWT_EXPIRES_IN_SECONDS:-3600}
+    restart: unless-stopped

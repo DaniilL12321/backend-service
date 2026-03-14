@@ -78,6 +78,34 @@ Scalar API Reference будет доступен по адресу:
 http://localhost:3000/reference
 ```
 
+## Запуск в Docker
+
+1. Подготовить `.env`.
+2. Собрать образ:
+
+```bash
+docker build -t backend-service .
+```
+
+3. Запустить контейнер:
+
+```bash
+docker run --env-file .env -p 3000:3000 backend-service
+```
+
+Или через Docker Compose:
+
+```bash
+docker compose up --build
+```
+
+`docker-compose.yml` использует явное перечисление переменных в секции `environment`, поэтому значения будут подхвачены из вашего окружения или из локального `.env`, который читает сам Docker Compose.
+
+После запуска будут доступны:
+
+- `http://localhost:3000/docs`
+- `http://localhost:3000/reference`
+
 ## Авторизация
 
 Используется JWT.
