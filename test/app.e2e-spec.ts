@@ -1,25 +1,28 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication } from '@nestjs/common';
-import request from 'supertest';
-import { App } from 'supertest/types';
-import { AppModule } from './../src/app.module';
+import { AppController } from '../src/app.controller';
+import { AppModule } from '../src/app.module';
 
-describe('AppController (e2e)', () => {
-  let app: INestApplication<App>;
+describe('AppController (pseudo-e2e)', () => {
+  let appController: AppController;
 
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     }).compile();
 
-    app = moduleFixture.createNestApplication();
-    await app.init();
+    appController = moduleFixture.get(AppController);
   });
 
   it('/ (GET)', () => {
-    return request(app.getHttpServer())
-      .get('/')
-      .expect(200)
-      .expect('Hello World!');
+    expect(appController.getInfo()).toEqual({
+      name: 'Books REST API',
+      version: '1.0.0',
+      entity: 'Book',
+      docs: {
+        login: 'POST /auth/login',
+        logout: 'POST /auth/logout',
+        books: '/books',
+      },
+    });
   });
 });

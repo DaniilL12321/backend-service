@@ -15,8 +15,17 @@ describe('AppController', () => {
   });
 
   describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+    it('should return API info', () => {
+      expect(appController.getInfo()).toEqual({
+        name: 'Books REST API',
+        version: '1.0.0',
+        entity: 'Book',
+        docs: {
+          login: 'POST /auth/login',
+          logout: 'POST /auth/logout',
+          books: '/books',
+        },
+      });
     });
   });
 });
