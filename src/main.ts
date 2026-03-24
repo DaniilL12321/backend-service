@@ -5,7 +5,7 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { DatabaseService } from './database/database.service';
 
-async function bootstrap() {
+export async function createApp() {
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalFilters(new AllExceptionsFilter());
@@ -35,7 +35,15 @@ async function bootstrap() {
   const databaseService = app.get(DatabaseService);
   await databaseService.initialize();
 
+  return app;
+}
+
+async function bootstrap() {
+  const app = await createApp();
+
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 
-void bootstrap();
+if (require.main === module) {
+  void bootstrap();
+}
