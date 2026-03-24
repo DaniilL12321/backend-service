@@ -1,11 +1,12 @@
 import { NestFactory } from '@nestjs/core';
+import { Logger } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { apiReference } from '@scalar/nestjs-api-reference';
 import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { DatabaseService } from './database/database.service';
 
 export async function createApp() {
+  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalFilters(new AllExceptionsFilter());
@@ -20,17 +21,28 @@ export async function createApp() {
     .build();
   const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('docs', app, swaggerDocument);
-  app.use(
-    '/reference',
-    apiReference({
-      content: swaggerDocument,
-      pageTitle: 'Books REST API Reference',
-      title: 'Books REST API',
-      theme: 'kepler',
-      layout: 'modern',
-      darkMode: false,
-    }),
-  );
+
+  if (process.env.ENABLE_SCALAR !== 'false') {
+    try {
+      const { apiReference } = await import('@scalar/nestjs-api-reference');
+      app.use(
+        '/reference',
+        apiReference({
+          content: swaggerDocument,
+          pageTitle: 'Books REST API Reference',
+          title: 'Books REST API',
+          theme: 'kepler',
+          layout: 'modern',
+          darkMode: false,
+        }),
+      );
+    } catch (error) {
+      logger.warn(
+        'Scalar UI is unavailable in this runtime. Swagger remains available at /docs',
+      );
+      logger.debug(String(error));
+    }
+  }
 
   const databaseService = app.get(DatabaseService);
   await databaseService.initialize();
